@@ -1,36 +1,60 @@
-// app/api/proxy/[...path]/route.ts
+// src/app/api/proxy/[...path]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-const API_URL = process.env.API_URL!; // e.g. http://localhost:5000/api
+const API_URL = process.env.API_URL ?? "http://localhost:4000";
 
-async function handle(req: NextRequest) {
-  const segments = req.nextUrl.pathname.split("/api/proxy/")[1] || "";
-  const target = `${API_URL}/${segments}`.replace(/\/+$/g, "");
+// Satu handler untuk semua method
+async function handler(
+  req: NextRequest,
+  ctx: { params: Promise<{ path: string[] }> }
+) {
+  const { path } = await ctx.params; // params itu Promise di Next 15
+  const segments = Array.isArray(path) ? path.join("/") : "";
+  // Build target URL (ikutkan querystring dari req)
+  const target =
+    `${API_URL}/${segments}`.replace(/\/+$/g, "") + (req.nextUrl.search || "");
 
-  const token = cookies().get("token")?.value;
+  // --- Baca cookie (ASYNC) ---
+  const c = await cookies(); // <- wajib await
+  const token = c.get("token")?.value;
+
+  // Siapkan headers untuk diteruskan
+  const headers = new Headers(req.headers);
+  headers.delete("host");
+  // Set Authorization bila ada token dari cookie
+  if (token) headers.set("authorization", `Bearer ${token}`);
+
+  // Siapkan body selain GET/HEAD
+  const hasBody = req.method !== "GET" && req.method !== "HEAD";
+  const body = hasBody ? await req.arrayBuffer() : undefined;
 
   const init: RequestInit = {
     method: req.method,
-    headers: {
-      "Content-Type": req.headers.get("content-type") || "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    },
-    body: ["GET", "HEAD"].includes(req.method) ? undefined : await req.text(),
+    headers,
+    body,
+    redirect: "manual",
   };
 
-  const res = await fetch(target, init);
-  const data = await res.arrayBuffer();
+  // Forward ke backend
+  const upstream = await fetch(target, init);
 
-  // Mirror status & headers as needed
-  const out = new NextResponse(data, { status: res.status });
-  res.headers.forEach((v, k) => {
-    if (k.toLowerCase() === "content-type") out.headers.set(k, v);
+  // Siapkan response ke client (salin headers tapi buang hop-by-hop)
+  const resHeaders = new Headers(upstream.headers);
+  resHeaders.delete("content-encoding");
+  resHeaders.delete("transfer-encoding");
+  resHeaders.delete("connection");
+
+  const data = await upstream.arrayBuffer();
+  return new NextResponse(data, {
+    status: upstream.status,
+    headers: resHeaders,
   });
-  return out;
 }
 
-export const GET = handle;
-export const POST = handle;
-export const PUT = handle;
-export const DELETE = handle;
+export const GET = handler;
+export const POST = handler;
+export const PUT = handler;
+export const PATCH = handler;
+export const DELETE = handler;
+export const OPTIONS = handler;

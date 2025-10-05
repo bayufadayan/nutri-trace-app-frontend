@@ -5,7 +5,7 @@ import { cookies } from "next/headers";
 const API_URL = process.env.API_URL!;
 
 export async function POST(req: NextRequest) {
-  const token = cookies().get("token")?.value;
+  const token = (await cookies()).get("token")?.value;
   const body = await req.json();
   const res = await fetch(`${API_URL}/register`, {
     method: "POST",
@@ -17,3 +17,4 @@ export async function POST(req: NextRequest) {
   });
   const data = await res.json();
   return NextResponse.json(data, { status: res.status });
+}

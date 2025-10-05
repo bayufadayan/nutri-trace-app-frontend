@@ -1,86 +1,79 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+// src/app/auth/login/page.tsx
 "use client";
 
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { toast } from "sonner"; // ⬅️ gunakan toast, bukan Toaster
-
-const schema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
-
-type FormValues = z.infer<typeof schema>;
+import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormValues>({ resolver: zodResolver(schema) });
-
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const sp = useSearchParams();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
-  const onSubmit = async (values: FormValues) => {
+  async function onSubmit(e: React.FormEvent) {
+    e.preventDefault();
     setLoading(true);
+    setErr(null);
     try {
-      const res = await fetch("/api/auth/login", {
+      const r = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(values),
+        body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || "Login failed");
-
-      toast.success("Login success"); // ✅
-
-      const next = sp.get("next");
-      if (next) return router.replace(next);
-
-      const role: string = data?.role || "";
-      const dest = ("/" + role.toLowerCase()).replace("superadmin", "admin");
-      router.replace(dest || "/");
+      if (!r.ok) {
+        const data = await r.json().catch(() => ({}));
+        throw new Error(data?.message || "Login gagal");
+      }
+      // sukses -> redirect
+      router.push("/");
     } catch (e: any) {
-      toast.error("Login failed", { description: e.message }); // ✅
+      setErr(e?.message || "Terjadi kesalahan");
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
-    <div className="grid place-items-center min-h-[80vh] p-4">
-      <Card className="w-full max-w-sm p-6 space-y-4">
-        <h1 className="text-xl font-semibold">NutriTrace — Login</h1>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-          <div>
-            <Input placeholder="Email" type="email" {...register("email")} />
-            {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-          <div>
-            <Input
-              placeholder="Password"
-              type="password"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
-            )}
-          </div>
-          <Button className="w-full" disabled={loading}>
-            {loading ? "Signing in…" : "Sign in"}
-          </Button>
-        </form>
-      </Card>
-    </div>
+    <main className="container mx-auto max-w-md p-6">
+      <h1 className="text-2xl font-semibold mb-4">Login</h1>
+
+      <form onSubmit={onSubmit} className="space-y-4">
+        <div className="space-y-1">
+          <label className="block text-sm">Email</label>
+          <input
+            type="email"
+            className="w-full rounded border px-3 py-2"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        <div className="space-y-1">
+          <label className="block text-sm">Password</label>
+          <input
+            type="password"
+            className="w-full rounded border px-3 py-2"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+          />
+        </div>
+
+        {err && <p className="text-sm text-red-600">{err}</p>}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="rounded bg-black px-4 py-2 text-white disabled:opacity-60"
+        >
+          {loading ? "Masuk..." : "Masuk"}
+        </button>
+      </form>
+    </main>
   );
 }

@@ -1,38 +1,89 @@
-// app/distributor/distributions/new/page.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// src/app/distributor/new/page.tsx
 "use client";
-import { useSearchParams, useRouter } from "next/navigation";
+
 import { useState } from "react";
-import { api } from "@/lib/api";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
-export default function NewDistributionPage() {
-    const sp = useSearchParams();
+// export const metadata = {
+//     title: "Distributor • New",
+//     description: "Create new distributor",
+// };
+
+export default function DistributorNewPage() {
     const router = useRouter();
-    const [form, setForm] = useState({
-        batchId: sp.get("batchId") || "",
-        driverName: "",
-        truckId: "",
-        fromLocation: "",
-        toLocation: "",
-        sentAt: new Date().toISOString(),
-    });
+    const [name, setName] = useState("");
+    const [address, setAddress] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [err, setErr] = useState<string | null>(null);
 
-    const submit = async () => {
-        await api.post("/distributions", form);
-        router.push("/distributor");
-    };
+    async function onSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        setLoading(true);
+        setErr(null);
+        try {
+            const r = await fetch("/api/distributors", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ name, address }),
+            });
+            if (!r.ok) {
+                const data = await r.json().catch(() => ({}));
+                throw new Error(data?.message || "Gagal menyimpan distributor");
+            }
+            router.push("/distributor"); // arahkan ke list page kamu
+        } catch (e: any) {
+            setErr(e?.message || "Terjadi kesalahan");
+        } finally {
+            setLoading(false);
+        }
+    }
 
     return (
-        <main className="container mx-auto p-4">
-            <Card className="p-4 grid gap-2 max-w-xl">
-                <h1 className="text-xl font-semibold">Create Distribution</h1>
-                {Object.entries(form).map(([k, v]) => (
-                    <Input key={k} placeholder={k} value={String(v)} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))} />
-                ))}
-                <Button onClick={submit}>Create</Button>
-            </Card>
+        <main className="container mx-auto max-w-lg p-6 space-y-4">
+            <h1 className="text-2xl font-semibold">New Distributor</h1>
+
+            <form onSubmit={onSubmit} className="space-y-4">
+                <div className="space-y-1">
+                    <label className="block text-sm">Name</label>
+                    <input
+                        className="w-full rounded border px-3 py-2"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                        placeholder="PT Maju Jaya"
+                    />
+                </div>
+
+                <div className="space-y-1">
+                    <label className="block text-sm">Address</label>
+                    <input
+                        className="w-full rounded border px-3 py-2"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Jl. Sudirman No. 1"
+                    />
+                </div>
+
+                {err && <p className="text-sm text-red-600">{err}</p>}
+
+                <div className="flex gap-2">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="rounded bg-black px-4 py-2 text-white disabled:opacity-60"
+                    >
+                        {loading ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => router.back()}
+                        className="rounded border px-4 py-2"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </form>
         </main>
     );
 }
