@@ -1,0 +1,1 @@
+export type Role = "SUPERADMIN" | "PRODUCER" | "DISTRIBUTOR" | "NUTRITIONIST";

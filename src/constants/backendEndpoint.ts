@@ -1,0 +1,1 @@
+export const BACKEND_URL = "https://https://nutri-trace-backend.bayufadayan.my.id/api";
