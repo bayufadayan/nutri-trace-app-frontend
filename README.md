@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🥗 NutriTrace Frontend — Supply Chain Transparency App
 
-## Getting Started
+Frontend untuk **NutriTrace**, platform pelacakan rantai pasok pangan yang menghadirkan transparansi dari asal bahan hingga distribusi akhir ke konsumen. Dibangun dengan **Next.js 14 (App Router)** dan **TailwindCSS + ShadCN UI** untuk antarmuka yang cepat, rapi, dan mudah dikembangkan.
 
-First, run the development server:
+🔗 **Live Frontend:** https://nutri-trace.vercel.app/  
+🔗 **Frontend Repository:** https://github.com/bayufadayan/nutri-trace-app-frontend  
+🔗 **Backend (API) Live:** https://nutri-trace-backend.bayufadayan.my.id/  
+🔗 **Backend Repository:** https://github.com/bayufadayan/nutri-trace-app-backend
 
+---
+
+## 📘 Project Title
+**NutriTrace Frontend**
+
+---
+
+## 📝 Description
+NutriTrace memudahkan pengguna menelusuri **asal bahan, proses pengolahan, distribusi**, hingga **informasi gizi** tiap produk. Melalui antarmuka web yang responsif, pengguna dapat **scan/masukkan kode** (atau QR code di sisi backend) untuk melihat detail batch dan nilai gizi produk, serta memantau alur rantai pasok secara transparan.
+
+---
+
+## 🧰 Technologies Used
+- **Next.js 15 (App Router)** — SSR/ISR, performa cepat
+- **TypeScript** — type-safe & maintainable
+- **Tailwind CSS** — styling utility-first, cepat & konsisten
+- **ShadCN UI** — komponen UI siap pakai dan dapat dikustom
+- **React Hook Form + Zod** — form + validasi skema yang solid
+- **Recharts** — visualisasi data gizi/distribusi
+- **ESLint & Prettier** — menjaga kualitas dan konsistensi kode
+
+---
+
+## ✨ Features
+| Fitur | Deskripsi |
+| --- | --- |
+| **Product & Batch Trace** | Lihat asal bahan, proses, dan distribusi berdasarkan kode/batch |
+| **Nutrition Panel** | Tampilkan nilai gizi (kalori, protein, karbo, lemak) per produk |
+| **Search/Trace by Code** | Halaman trace yang menerima kode produk/batch |
+| **Data Visualization** | Grafik (Recharts) untuk tren/komposisi gizi |
+| **Responsive UI** | Desain modern dengan Tailwind + ShadCN |
+| **No-Store Fetching** | Mengambil data fresh dari API backend |
+
+> Catatan: Scan QR dilakukan pada sisi backend (generator/handler). Frontend menampilkan data yang diambil via API.
+
+---
+
+## ⚙️ Setup Instructions
+
+### 1) Clone & Install
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/bayufadayan/nutri-trace-app-frontend.git
+cd nutri-trace-app-frontend
+npm install
+
+```
+### 2) Environment Variables
+```env
+# URL Backend (API)
+API_URL="https://nutri-trace-backend.bayufadayan.my.id"
+
+# (Opsional) Nama app untuk metadata/head
+NEXT_PUBLIC_APP_NAME="NutriTrace"
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3) Run (Development)
+```bash
+# Development
+npm run dev
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+### 4) Build & Start (Production)
+```bash
+npm run build
+npm start
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+Server default: http://localhost:3000
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## 🧭 Struktur Direktori (ringkas)
+```bash
+ntar dulu
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+Catatan: Skema & daftar endpoint lengkap dapat dilihat pada https://nanti.com
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
+## 🧠 AI Support Explanation
+Pengembangan backend dibantu IBM Granite 3.3:2b via Ollama untuk:
+- Menyusun boilerplate halaman dan komponen UI (ShadCN)
+- Merapikan validasi form (React Hook Form + Zod)
+- Membantu refactor & perbaikan saat debugging
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🚀 Deployment (Vercel)
+1. Push repo ke GitHub: bayufadayan/nutri-trace-app-frontend
+2. Import ke Vercel
+3. Tambahkan Environment Variables:
+  - API_URL = https://nutri-trace-backend.bayufadayan.my.id
+4. Deploy → aplikasi akan tersedia di https://nutri-trace.vercel.app/
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 📝 License
+MIT License
+
+---
+
+## 🔗 Related Links
+- Frontend Live: https://nutri-trace.vercel.app/
+- Frontend Repo: https://github.com/bayufadayan/nutri-trace-app-frontend
+  
+- Backend Live: https://nutri-trace-backend.bayufadayan.my.id/
+- Backend Repo: https://github.com/bayufadayan/nutri-trace-app-backend
+  
+- Dokumentasi/Media: https://drive.google.com/drive/folders/1otM2QtGHR8jDnluKCaphZTZsuhg5tpsp?usp=sharing
+
+---
+
+<p align="center"> </p> <p align="center"> <a href="https://github.com/bayufadayan"> <img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"/> </a> <a href="https://www.linkedin.com/in/muhamad-bayu-fadayan/"> <img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"/> </a> <a href="https://bayufadayan.my.id/"> <img src="https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=vercel&logoColor=white"/> </a> <a href="https://drive.google.com/file/d/1fPClIxWKbeaKyArwL9cSIDmOFeT-tBt2/view?usp=drive_link"> <img src="https://img.shields.io/badge/CURICULUM%20VITAE-4285F4?style=for-the-badge&logo=googledrive&logoColor=white"/> </a> </p> <p align="center"> Made with ❤️ by <a href="https://github.com/bayufadayan">Bayu Fadayan</a><br/> <img src="https://img.shields.io/badge/Year-2025-blue?style=flat-square"/> <img src="https://img.shields.io/badge/Role-Backend%20Developer-purple?style=flat-square"/><br/><br/> <a href="https://github.com/bayufadayan/nutri-trace-app-frontend"> <img src="https://img.shields.io/badge/Go%20to%20this%20repository-000000?style=flat-square&logo=github&logoColor=white"/> </a> </p>
