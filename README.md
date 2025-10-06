@@ -55,11 +55,11 @@ npm install
 ```
 ### 2) Environment Variables
 ```env
-# URL Backend (API)
-API_URL="https://nutri-trace-backend.bayufadayan.my.id"
-
-# (Opsional) Nama app untuk metadata/head
-NEXT_PUBLIC_APP_NAME="NutriTrace"
+API_BASE=
+NEXT_PUBLIC_API_BASE=
+ACCESS_TOKEN_MAXAGE=86400
+REFRESH_TOKEN_MAXAGE=2592000
+APPLICATION_MODE="DEMO"
 
 ```
 
