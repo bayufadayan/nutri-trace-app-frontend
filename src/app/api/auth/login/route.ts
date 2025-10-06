@@ -47,11 +47,13 @@ export async function POST(req: Request) {
 
     const res = NextResponse.json({ user });
 
-    const secure = true;
+    const isHttps =
+      process.env.NODE_ENV === "production" ||
+      (typeof process !== "undefined" && process.env.VERCEL === "1");
     const baseCookie = {
       path: "/",
       httpOnly: true as const,
-      secure,
+      secure: isHttps,
       sameSite: "lax" as const,
     };
 
@@ -63,16 +65,14 @@ export async function POST(req: Request) {
       ...baseCookie,
       maxAge: REFRESH_TOKEN_MAXAGE,
     });
-
-    if (user?.role) {
-      res.cookies.set("role", String(user.role), {
-        path: "/",
-        httpOnly: false,
-        secure,
-        sameSite: "lax",
-        maxAge: ACCESS_TOKEN_MAXAGE,
-      });
-    }
+    // role non-httpOnly
+    res.cookies.set("role", String(user.role), {
+      path: "/",
+      httpOnly: false,
+      secure: isHttps,
+      sameSite: "lax",
+      maxAge: ACCESS_TOKEN_MAXAGE,
+    });
 
     return res;
   } catch {

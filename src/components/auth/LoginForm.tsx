@@ -15,10 +15,18 @@ export default function LoginForm() {
     const [loading, setLoading] = React.useState(false)
     const [err, setErr] = React.useState<string | null>(null)
 
+    const HOME_BY_ROLE: Record<string, string> = {
+        SUPERADMIN: "/admin",
+        PRODUCER: "/producer",
+        DISTRIBUTOR: "/distributor",
+        NUTRITIONIST: "/nutritionist",
+    }
+
     async function onSubmit(e: React.FormEvent) {
         e.preventDefault()
         setLoading(true)
         setErr(null)
+
         try {
             const r = await fetch("/api/auth/login", {
                 method: "POST",
@@ -30,15 +38,24 @@ export default function LoginForm() {
             if (!r.ok) {
                 throw new Error(data?.message || "Login gagal")
             }
+            const params = new URLSearchParams(window.location.search)
+            const next = params.get("next")
+            const role = String(data?.user?.role ?? "")
 
-            // redirect sederhana
-            window.location.href = "/"
+            if (next) {
+                window.location.href = next
+                return
+            }
+
+            const dashboard = HOME_BY_ROLE[role] ?? "/"
+            window.location.href = dashboard
         } catch (e: any) {
             setErr(e?.message || "Terjadi kesalahan")
         } finally {
             setLoading(false)
         }
     }
+
 
     return (
         <Card className="shadow-soft border-emerald-100">
