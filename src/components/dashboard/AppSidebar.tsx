@@ -15,6 +15,7 @@ import {
     Boxes,
     Truck,
     Utensils,
+    HandPlatter,
     Settings,
     type LucideIcon,
 } from "lucide-react"
@@ -27,6 +28,7 @@ const ICONS: Record<IconName, LucideIcon> = {
     "boxes": Boxes,
     "truck": Truck,
     "utensils": Utensils,
+    "hand-platter": HandPlatter,
     "settings": Settings,
 }
 

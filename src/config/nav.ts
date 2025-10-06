@@ -6,6 +6,7 @@ export type IconName =
     | "boxes"
     | "truck"
     | "utensils"
+    | "hand-platter"
     | "settings";
 
 export type NavItem = {
@@ -29,7 +30,6 @@ export const NAV_ITEMS: NavItem[] = [
         icon: "users",
         roles: ["SUPERADMIN"],
     },
-
     {
         title: "Batches",
         href: "/admin/batches",
@@ -42,7 +42,6 @@ export const NAV_ITEMS: NavItem[] = [
         icon: "boxes",
         roles: ["PRODUCER"],
     },
-
     {
         title: "Distributions",
         href: "/admin/shipments",
@@ -57,11 +56,22 @@ export const NAV_ITEMS: NavItem[] = [
     },
     {
         title: "Nutrition",
+        href: "/admin/nutritions",
+        icon: "utensils",
+        roles: ["SUPERADMIN"],
+    },
+    {
+        title: "Nutrition",
         href: "/nutritionist/analysis",
         icon: "utensils",
-        roles: ["NUTRITIONIST", "SUPERADMIN"],
+        roles: ["NUTRITIONIST"],
     },
-
+    {
+        title: "Product (Food)",
+        href: "/admin/products",
+        icon: "hand-platter",
+        roles: ["NUTRITIONIST"],
+    },
     {
         title: "Settings",
         href: "/settings",
