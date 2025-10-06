@@ -1,63 +1,83 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// src/app/api/auth/login/route.ts
-import { NextRequest, NextResponse } from "next/server";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
 
-// (opsional) URL API backend dari .env.local
-const API_URL = process.env.API_URL ?? "http://localhost:4000";
+const API_BASE = process.env.API_BASE!;
+const ACCESS_TOKEN_MAXAGE = Number(process.env.ACCESS_TOKEN_MAXAGE ?? 86400);
+const REFRESH_TOKEN_MAXAGE = Number(
+  process.env.REFRESH_TOKEN_MAXAGE ?? 2592000
+);
 
-type LoginPayload = { email: string; password: string };
-type LoginResponse = { token: string };
-
-/**
- * POST /api/auth/login
- * Body: { email, password }
- * Return: { success, message? }
- */
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as LoginPayload;
+    const { email, password } = await req.json();
 
-    // --- panggil backend auth kamu ---
-    const r = await fetch(`${API_URL}/auth/login`, {
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: "Email dan password wajib diisi" },
+        { status: 400 }
+      );
+    }
+
+    const r = await fetch(`${API_BASE}/api/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
+      body: JSON.stringify({ email, password }),
       cache: "no-store",
     });
 
+    const data = await r.json().catch(() => ({}));
+
     if (!r.ok) {
-      const text = await r.text().catch(() => "");
+      const msg = (data as any)?.message || "Login gagal";
+      return NextResponse.json({ message: msg }, { status: r.status });
+    }
+
+    const { user, accessToken, refreshToken } = data as {
+      user: any;
+      accessToken: string;
+      refreshToken: string;
+    };
+
+    if (!accessToken || !refreshToken) {
       return NextResponse.json(
-        { success: false, message: text || "Login failed" },
-        { status: r.status }
+        { message: "Token tidak ditemukan dari server" },
+        { status: 502 }
       );
     }
 
-    const data = (await r.json()) as LoginResponse;
-    const token = data.token;
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: "No token returned" },
-        { status: 500 }
-      );
-    }
+    const res = NextResponse.json({ user });
 
-    // --- bikin response & set cookie DI SINI ---
-    const res = NextResponse.json({ success: true });
-
-    // set cookie aman untuk prod
-    res.cookies.set("token", token, {
-      httpOnly: true,
-      sameSite: "lax",
-      secure: process.env.NODE_ENV === "production",
+    const secure = true;
+    const baseCookie = {
       path: "/",
-      maxAge: 60 * 60 * 24 * 7, // 7 hari
+      httpOnly: true as const,
+      secure,
+      sameSite: "lax" as const,
+    };
+
+    res.cookies.set("access_token", accessToken, {
+      ...baseCookie,
+      maxAge: ACCESS_TOKEN_MAXAGE,
+    });
+    res.cookies.set("refresh_token", refreshToken, {
+      ...baseCookie,
+      maxAge: REFRESH_TOKEN_MAXAGE,
     });
 
+    if (user?.role) {
+      res.cookies.set("role", String(user.role), {
+        path: "/",
+        httpOnly: false,
+        secure,
+        sameSite: "lax",
+        maxAge: ACCESS_TOKEN_MAXAGE,
+      });
+    }
+
     return res;
-  } catch (err) {
+  } catch {
     return NextResponse.json(
-      { success: false, message: "Unexpected error" },
+      { message: "Tidak dapat menghubungi server. Coba lagi." },
       { status: 500 }
     );
   }
