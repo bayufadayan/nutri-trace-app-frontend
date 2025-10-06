@@ -1,3 +1,4 @@
+@config "../../tailwind.config.ts";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -76,6 +77,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --brand-primary: 0.646 0.15 148;
+  --brand-accent: 0.85 0.12 100;
+  --brand-surface: 0.98 0.02 150;
 }
 
 .dark {
@@ -118,5 +122,22 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  /* Background lembut light dengan nuansa hijau/kuning */
+  .body-bg {
+    background: radial-gradient(
+        40rem 40rem at 120% -10%,
+        oklch(var(--brand-primary) / 0.06),
+        transparent 35%
+      ),
+      radial-gradient(
+        35rem 35rem at -10% 110%,
+        oklch(var(--brand-accent) / 0.07),
+        transparent 35%
+      ),
+      oklch(var(--brand-surface));
   }
 }
