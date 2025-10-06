@@ -55,22 +55,22 @@ export const NAV_ITEMS: NavItem[] = [
         roles: ["DISTRIBUTOR"],
     },
     {
-        title: "Nutrition",
+        title: "Nutritions",
         href: "/admin/nutritions",
         icon: "utensils",
         roles: ["SUPERADMIN"],
     },
     {
-        title: "Nutrition",
+        title: "Nutritions",
         href: "/nutritionist/analysis",
         icon: "utensils",
         roles: ["NUTRITIONIST"],
     },
     {
-        title: "Product (Food)",
+        title: "Products",
         href: "/admin/products",
         icon: "hand-platter",
-        roles: ["NUTRITIONIST"],
+        roles: ["SUPERADMIN"],
     },
     {
         title: "Settings",
